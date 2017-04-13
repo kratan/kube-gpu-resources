@@ -3,20 +3,33 @@
 set -e
 set -x
 
-endpoint=http://127.0.0.1:8080
+echo "[$(date)] Kubernetes endpoints: ${KUBERNETES_ENDPOINTS:-<none>})"
+test -n "${KUBERNETES_ENDPOINTS}" || exit 1
+
+echo "[$(date)] Node: ${NODE_NAME:-<unknown>}"
+test -n "${NODE_NAME}" || exit 1
+
 resource=gpu
 value=`ls /sys/class/drm/ | egrep '^card[0-9]+$' | wc -l`
 
-echo "[$(date)] Node: ${NODE_NAME:-<unknown>}"
 echo "[$(date)] Resources:"
 echo "            ${resource:-<unknown>}: ${value:-<unknown>}"
 
-test -n "${NODE_NAME}" || exit 1
-
-while ! curl --silent --fail "${endpoint}/version" ; do
+echo "[$(date)] Searching for Kubernetes endpoint ..."
+while ! [[ "${endpoint}" ]] ; do
+	for e in ${KUBERNETES_ENDPOINTS} ; do
+		if curl --silent --fail "${e}/version" \
+			--cert   ${KUBE_CERT_FILE} \
+			--key    ${KUBE_KEY_FILE} \
+			--cacert ${KUBE_CA_CERT_FILE} > /dev/null ; then
+			endpoint="${e}"
+			break
+		fi
+	done
 	sleep 1
 done
 
+echo "[$(date)] Publishing resources ..."
 curl --fail \
      --request PATCH \
       --header "Accept: application/json" \

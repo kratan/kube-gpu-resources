@@ -11,6 +11,7 @@ metadata:
   name: kube-gpu-resources
   namespace: kube-system
 spec:
+  hostNetwork: true
   restartPolicy: OnFailure
   containers:
   - name: kube-gpu-resources
@@ -20,13 +21,14 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: status.nodeName
-  - name: "kubectl-proxy"
-    image: "quay.io/urzds/busybox-kubectl:v1.26.1-v1.5.1"
-    args:
-    - "proxy"
-    - "--port=8080"
+    - name: KUBE_CERT_FILE
+      value: /etc/kubernetes/ssl/kubelet.crt
+    - name: KUBE_KEY_FILE
+      value: /etc/kubernetes/ssl/kubelet.key
+    - name: KUBE_CA_CERT_FILE
+      value: /etc/kubernetes/ssl/ca.crt
 ```
 
-Internally it uses [Alpine Linux](http://alpinelinux.org/) with the [cURL](https://curl.haxx.se/) and [jq](https://stedolan.github.io/jq/) tools.
+Internally it uses [Alpine Linux](http://alpinelinux.org/) with [cURL](https://curl.haxx.se/).
 
 Similar to [urzds/kube-env-node-labels](https://github.com/urzds/kube-env-node-labels).
