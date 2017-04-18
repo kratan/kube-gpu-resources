@@ -17,7 +17,7 @@ echo "            ${resource:-<unknown>}: ${value:-<unknown>}"
 
 echo "[$(date)] Searching for Kubernetes endpoint ..."
 while ! [[ "${endpoint}" ]] ; do
-	for e in ${KUBERNETES_ENDPOINTS} ; do
+	for e in ${KUBERNETES_ENDPOINTS/,/ } ; do
 		if curl --silent --fail "${e}/version" \
 			--cert   ${KUBE_CERT_FILE} \
 			--key    ${KUBE_KEY_FILE} \
