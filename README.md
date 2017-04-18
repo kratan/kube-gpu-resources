@@ -15,18 +15,28 @@ spec:
   restartPolicy: OnFailure
   containers:
   - name: kube-gpu-resources
-    image: quay.io/urzds/kube-gpu-resources:v0.1.0
+    image: quay.io/urzds/kube-gpu-resources:v0.2.2
     env:
     - name: NODE_NAME
       valueFrom:
         fieldRef:
-          fieldPath: status.nodeName
+          fieldPath: spec.nodeName
     - name: KUBE_CERT_FILE
       value: /etc/kubernetes/ssl/kubelet.crt
     - name: KUBE_KEY_FILE
       value: /etc/kubernetes/ssl/kubelet.key
     - name: KUBE_CA_CERT_FILE
       value: /etc/kubernetes/ssl/ca.crt
+    - name: KUBERNETES_ENDPOINTS
+      value: ...
+    volumeMounts:
+    - mountPath: /etc/kubernetes/ssl
+      name: ssl-certs-kubernetes
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/ssl
+    name: ssl-certs-kubernetes
 ```
 
 Internally it uses [Alpine Linux](http://alpinelinux.org/) with [cURL](https://curl.haxx.se/).
