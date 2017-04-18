@@ -30,12 +30,15 @@ while ! [[ "${endpoint}" ]] ; do
 done
 
 echo "[$(date)] Publishing resources ..."
-curl --fail \
-     --request PATCH \
-      --header "Accept: application/json" \
-      --header "Content-Type: application/json-patch+json" \
-      --data @- \
-      "${endpoint}/api/v1/nodes/${NODE_NAME}/status" <<- EOF
+curl --silent --fail "${endpoint}/api/v1/nodes/${NODE_NAME}/status" \
+	--cert   ${KUBE_CERT_FILE} \
+	--key    ${KUBE_KEY_FILE} \
+	--cacert ${KUBE_CA_CERT_FILE} \
+	--request PATCH \
+	--header "Accept: application/json" \
+	--header "Content-Type: application/json-patch+json" \
+	--data @- \
+	<<- EOF
 [
   {
     "op": "add",
