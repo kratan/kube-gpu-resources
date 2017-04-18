@@ -3,6 +3,8 @@
 set -e
 set -x
 
+. /metadata.env
+
 echo "[$(date)] Kubernetes endpoints: ${KUBERNETES_ENDPOINTS:-<none>})"
 test -n "${KUBERNETES_ENDPOINTS}" || exit 1
 

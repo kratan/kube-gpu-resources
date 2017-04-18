@@ -33,10 +33,16 @@ spec:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
       readOnly: true
+    - mountPath: /metadata.env
+      name: metadata
+      readOnly: true
   volumes:
   - hostPath:
       path: /etc/kubernetes/ssl
     name: ssl-certs-kubernetes
+  - name: metadata
+    hostPath:
+      path: /run/metadata/bootcfg.env
 ```
 
 Internally it uses [Alpine Linux](http://alpinelinux.org/) with [cURL](https://curl.haxx.se/).
